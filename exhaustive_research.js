@@ -355,7 +355,6 @@
     let summary = document.getElementById('summary');
     let overall_rating = document.getElementById('overall_rating');
 
-
     // Stops 2 years earlier than current year to ensure that YTD extends to proper range
     // Try only stopping 1 year before? We are missing all of 2023-2024.... bruh!
     for (let currYear = universalStartYear; currYear < universalEndYear; currYear++) {
@@ -371,34 +370,26 @@
       let nextJanuarySPIndex = findEntry(currYear + 1, 1, 1, globalSPRes);
       let januarySPAdj = updatedSPInfo[Object.keys(updatedSPInfo)[januarySPIndex]]['5. adjusted close'];
       let nextJanuarySPAdj = updatedSPInfo[Object.keys(updatedSPInfo)[nextJanuarySPIndex]]['5. adjusted close'];
-      // Format the string for display to the user
-      // let yearString = `${currYear}-${currYear + 1}`;
-      // let yearArrayHeading = document.createElement('p');
-      // yearArrayHeading.textContent = "" + yearString + "(" + ticker.toUpperCase() + ": " + (nextJanuaryStockAdj / januaryStockAdj).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ")";
       if (nextJanuaryStockAdj / januaryStockAdj < 1) {
         decYear = decYear + 1
       }
       if ((nextJanuaryStockAdj / januaryStockAdj < 0.40) && (nextJanuarySPAdj / januarySPAdj > 0.8)) {
         // This indicates stock volatility compared to market 
-        // console.log("unacceptable. Stock just died randomly for no reason. ")
+        // console.log("unacceptable. Stock just died randomly for no reason.");
       } else if (nextJanuaryStockAdj / januaryStockAdj >= 1.2) {
         consecYearArray[consecOutPerform] = currYear;
         consecOutPerform = consecOutPerform + 1;
         if (consecYearStart == 0) {
           consecYearStart = currYear; 
         } else {
+          // If the current year
           if ((currYear - consecYearStart <= 3) && consecOutPerform >= 3) {
+            // Check if we have ever bought this stock before
             if (firstEverBuyYear == 0) {
               firstEverBuyYear = Number(currYear + 1);
             }
             mostRecentBuyYear = Number(currYear + 1);
             yesBuy = true;
-            // let buyRecommendation = document.createElement('h4');
-            // buyRecommendation.textContent = "I would have bought this stock on January 1st of the year: " + Number(currYear + 1);
-            // let yearsOutPerformed = document.createElement('p');
-            // yearsOutPerformed.textContent = "Based upon the trend observed over these years: " + consecYearArray;
-            // summary.appendChild(buyRecommendation);
-            // summary.appendChild(yearsOutPerformed)
             consecYearStart = 0;
             consecOutPerform = 0;
             consecYearArray = [];
@@ -410,11 +401,13 @@
         }
         
       }
+      // If the stock is within the past four years and has an adjusted close value of less then $10 a share
       if (Number(universalEndYear - currYear) <= 4 && Number(januaryStockAdj) < 10) {
-       
+        // Check if this security maintains the above properties for the current year (ie 2024 for example)
         if (Number(currYear + 1) == universalEndYear) {
           let januaryCurrentYearPrice = nextJanuaryStockAdj;
           let marketPriceCurrent = Number(updatedStockInfo[Object.keys(updatedStockInfo)[0]]['5. adjusted close']);
+          // Check penny criteria (ie still less than $10 and has gained at least 10% in value since the start of the year) 
           if (marketPriceCurrent > (januaryCurrentYearPrice * 1.1) && marketPriceCurrent < 10) {
             pennyConfirmed = true;
             pennyCandidates.push(ticker.toUpperCase());
@@ -423,7 +416,6 @@
       }
       // Determine whether or not the stock exceeded the S&P500 for each year
       if (nextJanuarySPAdj / januarySPAdj > nextJanuaryStockAdj / januaryStockAdj) {
-        // SPExceedDiv.appendChild(yearArrayHeading);
         // If the market did better than the stock, but the stock still gained value (ie > 1.0)
         if ((nextJanuaryStockAdj / januaryStockAdj) > 1) {
           // Increase the underperfomed but still gained counter
@@ -433,6 +425,7 @@
         }
       } else {
         outPerf = outPerf + 1
+        // Look at one of the pullback / slowdown years to determine moon candidate status
         if (Number(currYear) == 2022 && (nextJanuaryStockAdj / januaryStockAdj) >= 1.1) {
           moonCandidate = true;
           moonMultiplier = (nextJanuaryStockAdj / januaryStockAdj);
@@ -440,7 +433,7 @@
           moonCandidate = false;
           moonMultiplier = 0;
         }
-        
+        // If subsequent year's performance also meets the 10% increase criteria, set moonConfirmed to be true. 
         if (moonCandidate && Number(currYear) == 2023 && (nextJanuaryStockAdj / januaryStockAdj) >= 1.1 && (nextJanuaryStockAdj / januaryStockAdj) > moonMultiplier) {
           moonConfirmed = true;
         } else if (!moonCandidate && Number(currYear) == 2023) {
@@ -455,20 +448,20 @@
       }
     }
 
-    // Super gainer candidates
+    // Super gainer candidates must have existed for 12 years, and increased in value (irregardless of beating market)
+    // for 90% of those 12 years, and also need to have beaten the market at least two out of the last four years. 
     if (totalYears >= 12 && ((decYear / totalYears) <= 0.1 && recentOut >= 2)) {
       superGainerCandidates.push(ticker.toUpperCase())
       superGainerConfirmed = true;
     }
     let buyDecision = document.createElement('h3');
     buyDecision.classList.add('buy_decisions');
-    
+
     if (yesBuy) {
       buyDecision.textContent = "Would I have bought this stock before:  Yes";
     } else {
       buyDecision.textContent = "Would I have bought this stock before:  Not Yet...";
     }
-
     let final_decision = document.createElement('h3');
     let justification = document.createElement('h4');
     let just_year = document.createElement('h4');
