@@ -15,22 +15,6 @@
   let freshHotBuyCandidates = [];
   let currCount = 1;
   let exploreTicker = '';
-
-  // Personal Project Notes + Future Ideas:
-
-  // How stable a stock is, ie a way to recognize and appreciate the reliability of mutual funds / defense stocks
-
-  // Able to pop in a ticker symbol, and get the estimate of what industry the security belongs to 
-  // based on the common patterns of a defined leader in the industry. Ie, can we identify a semiconductor 
-  // stock based on the trends of other prominent semiconductor stocks?
-
-  // What the rough predicted price in 3 months, 6 months, 1 year, etc. is (using past data and trends), 
-  // and how much money will it be worth at that time in the future based upon what you put in it TODAY!
-
-  // Do a "breakthrough" hunt, ie look at the trends leading up to TSLA's rise, NVDA's rise, SMCI's rise
-  // etc that could lead to the discovery of these stocks 
-
-  // Could show how money compares to investments like CDs, high-yield bank accounts, inflation, etc. 
   
   // Sets up default page behavior
   function init() {
@@ -47,7 +31,7 @@
     document.querySelector('.new_port').style.display = 'block';
     document.querySelector('#new_research').style.display = 'none';
     readNasdaqSecurities();
-    // Explore a new stock market security every two seconds
+    // Explore a new stock market security roughly every second and a half
     setInterval(doResearch, 1400);
   }
 
@@ -76,10 +60,9 @@
     .catch(error => console.error('Error fetching file:', error));
   }
   
-  // Does research on a specific stock / security ticker provided by the user
-  // Pulls up the yield information, compares the security to others within its sector
-  // And shows graphically how much money the user could have made, and how they 
-  // can utilize that info to make more money in the future from investing... hence Fortune Teller
+  // Leverages the power of fortune teller research mode to make buy decisions 
+  // about all ticker symbols, and then categorizes ticker symbols into different types
+  // of "buys", based upon their qualities and trends exhibited
   function doResearch() {
       if (currCount % 20 == 0) {
         console.log("next ticker to exlpore")
@@ -107,114 +90,6 @@
       globalStockRes = res;
       var updatedInfo = res['Weekly Adjusted Time Series'];
       ticker = ticker.toLowerCase();
-      // // Extract the total length of API response (in weeks)
-      // let length = Object.keys(updatedInfo).length;
-      // let newGraphBackground = document.createElement('img'); 
-      // newGraphBackground.src = "https://media.istockphoto.com/id/1341800395/vector/grid-paper-mathematical-graph-cartesian-coordinate-system-with-x-axis-y-axis-squared.jpg?s=612x612&w=0&k=20&c=Jcq_YJw1cEufocBwcUu9N1BxXErtlYSr3FLYFyFFKAM=";
-      // newGraphBackground.onload = function () {
-      //   // Set up the graph of API weeks and initialize pre-sets 
-      //   // Hard-coded constants have been tailored based on specifics of the graph image, where possible magic numbers
-      //   // have been avoided
-      //   let pixelDistanceWidth = (((newGraphBackground.x + 452) -  (newGraphBackground.x + 24)) / (length));
-
-      //   // Create a height scaling score to adjust the vertical distance between dots depending 
-      //   // on how much the stock price has increased over its lifetime. Automatically adjusts 
-      //   // depending on how good / bad of a run a stock has had. 
-      //   let heightScaleScore = updatedInfo[Object.keys(updatedInfo)[0]]['5. adjusted close'] / updatedInfo[Object.keys(updatedInfo)[length - 1]]['5. adjusted close'];
-      //   let biggestAdjCloseEverSeenForStock = 0; 
-      //   let lowestAdjCloseEverSeenForStock = 10000000000;
-      //   // Keep track of respective intervals to print price / date information in overall stock lifetime
-      //   let intervalCount = 1; 
-      //   let mostRecentClose = updatedInfo[Object.keys(updatedInfo)[0]]['5. adjusted close'];
-      //   let firstEverAdjClose = updatedInfo[Object.keys(updatedInfo)[length - 1]]['5. adjusted close'];
-      //   firstEverAdjClose = Number(firstEverAdjClose);
-      //   mostRecentClose = Number(mostRecentClose);
-      //   let y_intervals = 0;
-
-      //   let adjCloseTotalDifference = mostRecentClose - firstEverAdjClose;
-      //   let adjClosePriceInterval = adjCloseTotalDifference / 4;
-      //   adjClosePriceInterval = Number(adjClosePriceInterval)
-
-      //   for (let i = 0; i < length; i++) {
-      //     let dot = document.createElement('span');
-      //     dot.addEventListener('mouseover', function() {
-      //       // Show the date of the dot when hovered over by user
-      //       let dotDate = document.createElement('p');
-      //       dotDate.textContent = Object.keys(updatedInfo)[i];
-      //       dotDate.id = 'dot#' + dot.id;
-      //       dotDate.classList.add('dot_label');
-      //       dotDate.style.left = newGraphBackground.x + 80 + ((length - i) * pixelDistanceWidth) + "px"; 
-      //       dotDate.style.top = 775 - ((300 / heightScaleScore) * (adjustedCurrentClose / firstEverAdjClose)) + "px"; 
-      //       document.getElementById('graph').appendChild(dotDate);
-      //     });
-      //     // Toggle back to default dot look
-      //     dot.addEventListener('mouseout', function() {
-      //       currDot = document.getElementById('dot#' + dot.id);
-      //       document.getElementById('graph').removeChild(currDot);
-      //     })
-
-      //     dot.classList.add('dot');
-      //     document.getElementById('graph').appendChild(dot);
-      //     dot.style.left = newGraphBackground.x + 80 + ((length - i) * pixelDistanceWidth) + "px"; 
-      //     let adjustedCurrentClose = updatedInfo[Object.keys(updatedInfo)[i]]['5. adjusted close'];
-
-      //     if (adjustedCurrentClose >= biggestAdjCloseEverSeenForStock) {
-      //       biggestAdjCloseEverSeenForStock = adjustedCurrentClose;
-      //     }
-
-      //     if (adjustedCurrentClose <= lowestAdjCloseEverSeenForStock) {
-      //       lowestAdjCloseEverSeenForStock = adjustedCurrentClose;
-      //     }
-
-      //     if (i == 0 || (i % Math.floor((length - 1) / 4) == 0)) {
-      //       // For intervals of fifths, display graphically the year and price of the stock
-      //       let yearLabel = document.createElement('span');
-      //       let priceLabel = document.createElement('span');
-      //       yearLabel.textContent = (Object.keys(updatedInfo)[i]).toString().split("-")[0];
-      //       let closeAdj;
-      //       if (y_intervals == 0) {
-      //         closeAdj = firstEverAdjClose;
-      //       } else if (y_intervals < 4) {
-      //         closeAdj = firstEverAdjClose + (adjClosePriceInterval * y_intervals);
-      //       } else {
-      //         closeAdj = mostRecentClose;
-      //       }
-      //       // let closeAdj = updatedInfo[Object.keys(updatedInfo)[i]]['5. adjusted close'];
-      //       // closeAdj = Number(closeAdj); // Convert to number
-      //       closeAdj = closeAdj.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      //       priceLabel.textContent = closeAdj;
-
-      //       yearLabel.classList.add('x_axis_label');
-      //       priceLabel.classList.add('x_axis_label')
-      //       priceLabel.style.left = newGraphBackground.x + 40 + "px";
-      //       priceLabel.style.top = (2.85 * newGraphBackground.y) - (70 * intervalCount) + "px";
-      //       yearLabel.style.top = 850 + "px"; 
-      //       yearLabel.style.right = newGraphBackground.x + 5 + (103 * intervalCount) + "px";
-      //       intervalCount++;
-      //       graphObj = document.getElementById('graph');
-      //       graphObj.appendChild(yearLabel);
-      //       graphObj.appendChild(priceLabel);
-      //       y_intervals = y_intervals + 1
-      //     }
-      //     dot.style.top = 825 - ((300 / heightScaleScore) * (adjustedCurrentClose / firstEverAdjClose)) + "px"; 
-      //   }
-
-      //   let dotArray = document.querySelectorAll('.dot');
-      //   // If the stock has gone up since the very first time it came on the market (IPO or similar),  
-      //   // color the dot to be green 
-      //   if (parseInt(firstEverAdjClose) < parseInt(mostRecentClose)) {
-      //     dotArray = document.querySelectorAll('.dot');
-      //     for (let z = 0; z < dotArray.length; z++) {
-      //       dotArray[z].style['background-color'] = 'green';
-      //     }
-      //   } else {
-      //     // Otherwise color the dot to be red if it has since gone down in price
-      //     for (let z = 0; z < dotArray.length; z++) {
-      //       dotArray[z].style['background-color'] = 'red';
-      //     }
-      //   }
-      // };
-      // document.getElementById('graph').appendChild(newGraphBackground);
       if (lastUpdatedYear >= 2024) {
         calculateMomentum(res);
       } else {
@@ -264,48 +139,9 @@
     indexYTD = findEntry(currYear, 1, 1, res);
     YTDAdjClose = updatedInfo[Object.keys(updatedInfo)[indexYTD]]['5. adjusted close'];
 
-    // // The market price of what the security is currently going for on the stock market
+    // The market price of what the security is currently going for on the stock market
     let marketPrice = updatedInfo[Object.keys(updatedInfo)[0]]['5. adjusted close'];
-    // // Initial investment is set using $10,000 standard (common practice in investment community)
-    // let initialInvestment = 10000;
-
-    // // Dynamically create a scaler that allows the user to adjust their initial amount invested into the stock
-    // let initialInvestmentContainer = document.createElement('div');
-    // initialInvestmentContainer.classList.add("slider-container");
-    // let investmentLabel = document.createElement('label');
-    // investmentLabel.for = "invest_slider";
-    // let investmentInput = document.createElement('input');
-    // investmentInput.id = "slider";
-    // investmentInput.type = "range";
-    // investmentInput.min = "1000";
-    // investmentInput.max = "100000";
-    // investmentInput.value = "10000";
-    // investmentInput.step = 1000;
-
-    // initialInvestmentContainer.textContent = "Choose your initial investment amount:";
-    // let investmentText = document.createElement('p');
-    // investmentText.textContent = "Investing: $" + initialInvestment;
-
-    // initialInvestmentContainer.appendChild(investmentLabel);
-    // initialInvestmentContainer.appendChild(investmentInput);
-    // initialInvestmentContainer.appendChild(investmentText);
-
-    // investmentInput.addEventListener('input', function() {
-    //   investmentText.textContent = "Investing: $" + investmentInput.value;
-    //   initialInvestment = investmentInput.value;
-    //   // clear out previous content but only from the investment amounts (not the SP comparison)
-    //   document.getElementById('investment_scaler_container').innerHTML = "";
-    //   displayYieldValues(initialInvestment, tenYearAdjClose, fiveYearAdjClose, twoYearAdjClose, startAdjClose, oneYearAdjClose, YTDAdjClose, marketPrice);
-    // });
-    // // Add class to display visual styling and scaling capabilities
-    // document.getElementById('momentum_slider').appendChild(initialInvestmentContainer);
-    // displayYieldValues(initialInvestment, tenYearAdjClose, fiveYearAdjClose, twoYearAdjClose, startAdjClose, oneYearAdjClose, YTDAdjClose, marketPrice);
-    
-    // let YTDValue = document.createElement('p');
-    // globalYTDTrack = ((10000 / YTDAdjClose) * marketPrice);
     calculateSP500Rating(((10000 / YTDAdjClose) * marketPrice));
-    // YTDValue.textContent = "Your investment's YTD yield would be: " + investmentValueYTDLater.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    // document.getElementById('momentum').appendChild(YTDValue);
   }
 
   // Bulk function to display all of the yields tenYear to YTD.
@@ -496,18 +332,6 @@
     let universalEndYear = universalEndYearArray[0]
     universalEndYear = parseInt(universalEndYear);
 
-    // let SPExceedDiv = document.createElement('div');
-    // SPExceedDiv.id = 'SPExceeded';
-    // let SPHeading = document.createElement('h3');
-    // SPHeading.textContent = "S&P500 exceeded Stock for the following year(s): ";
-    // SPExceedDiv.appendChild(SPHeading);
-
-    // let StockExceedDiv = document.createElement('div');
-    // StockExceedDiv.id = 'StockExceeded';
-    // let StockHeading = document.createElement('h3');
-    // StockHeading.textContent = "Stock exceeded S&P500 for the following year(s): ";
-    // StockExceedDiv.appendChild(StockHeading);
-
     let totalYears = 0;
     let outPerf = 0;
     let decYear = 0;
@@ -607,12 +431,7 @@
           underPLoss = underPLoss + 1;
         }
       } else {
-        // StockExceedDiv.appendChild(yearArrayHeading);
         outPerf = outPerf + 1
-
-        // SUNDAY WORK: also check if the stock beat the market and was > 1.2 for 2022-23 as that means its ready to moon
-        // and also make sure and check that the current year is 2022 or 2023
-        // Also add a feature where you see how much money its stock buy predictions would have made you since it told you to invest. 
         if (Number(currYear) == 2022 && (nextJanuaryStockAdj / januaryStockAdj) >= 1.1) {
           moonCandidate = true;
           moonMultiplier = (nextJanuaryStockAdj / januaryStockAdj);
@@ -649,11 +468,6 @@
       buyDecision.textContent = "Would I have bought this stock before:  Not Yet...";
     }
 
-    // summary.insertAdjacentElement("beforebegin", buyDecision);
-
-    // document.getElementById('momentum').appendChild(StockExceedDiv);
-    // document.getElementById('momentum').appendChild(SPExceedDiv);
-
     let final_decision = document.createElement('h3');
     let justification = document.createElement('h4');
     let just_year = document.createElement('h4');
@@ -663,8 +477,6 @@
         || ((decYear / totalYears) <= 0.2 && recentOut >= 2) || (recentOut >= 3) || pennyConfirmed || superGainerConfirmed) {
       overallBuyForCurrentYear = true;
       if (lastUpdatedYear >= 2024) {
-        // console.log("I like this stock as a buy:")
-        // console.log(updatedStockInfo)
         buyCandidates.push(ticker.toUpperCase());
       }
     }
@@ -685,11 +497,6 @@
       } else if (((decYear / totalYears) <= 0.2 && recentOut >= 2)) {
         justification.textContent = 'This stock has historically gained value and remains relevant in the current market';
       }
-      // console.log("my justification was:")
-      // console.log(justification.textContent)
-
-
-
 
       if (Number(mostRecentBuyYear) > 0) {
         just_year.textContent = 'The most recent buy year for this stock was: ' + mostRecentBuyYear;
@@ -709,66 +516,9 @@
       freshHotBuyCandidates.push(ticker.toUpperCase());
       hotFreshStock.textContent = 'This stock would have just been purchased for the first time in the current year: ' + Number(universalEndYear);
     }
-   
-
-    // If the stock would have been bought within the last four years and the stock has outperformed the market 
-    // at least 2/4 times or better in the past four years, 
-    // if (moonConfirmed) {
-    //   final_decision.textContent = 'Should you buy this stock in the year 2024: Yes'
-    //   if (Number(mostRecentBuyYear) > 0) {
-    //     just_year.textContent = 'The most recent buy year for this stock was: ' + mostRecentBuyYear;
-    //     indexMostRecentBuy = findEntry(Number(mostRecentBuyYear), 1, 1, globalStockRes);
-    //     mostRecentBuyAdjClose = updatedStockInfo[Object.keys(updatedStockInfo)[indexMostRecentBuy]]['5. adjusted close'];
-    //     let marketPriceStock = updatedStockInfo[Object.keys(updatedStockInfo)[0]]['5. adjusted close'];
-    //     let calculatedValue = (1000 / mostRecentBuyAdjClose) * marketPriceStock;
-    //     just_money.textContent = 'If you would have put $1,000 into this stock on Jan 1st of the above year, your investment would now be worth: $' + Number(calculatedValue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    //   }
-    // } else if (Number(universalEndYear - mostRecentBuyYear) <= 4 && recentOut >= 2) {
-    //   final_decision.textContent = 'Should you buy this stock in the year 2024: Yes';
-    //   justification.textContent = 'This stock would have been bought within the last few years, and has beat the market on average during the last few years';
-    //   if (Number(mostRecentBuyYear) > 0) {
-    //     just_year.textContent = 'The most recent buy year for this stock was: ' + mostRecentBuyYear;
-    //     indexMostRecentBuy = findEntry(Number(mostRecentBuyYear), 1, 1, globalStockRes);
-    //     mostRecentBuyAdjClose = updatedStockInfo[Object.keys(updatedStockInfo)[indexMostRecentBuy]]['5. adjusted close'];
-    //     let marketPriceStock = updatedStockInfo[Object.keys(updatedStockInfo)[0]]['5. adjusted close'];
-    //     let calculatedValue = (1000 / mostRecentBuyAdjClose) * marketPriceStock;
-    //     just_money.textContent = 'If you would have put $1,000 into this stock on Jan 1st of the above year, your investment would now be worth: $' + Number(calculatedValue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    //   }
-    // } else if ((decYear / totalYears) <= 0.25 && recentOut >= 1) {
-    //   final_decision.textContent = 'Should you buy this stock in the year 2024: Yes'
-    //   justification.textContent = 'This stock has historically gained value and remains relevant in the current market';
-    //   if (Number(mostRecentBuyYear) > 0) {
-    //     just_year.textContent = 'The most recent buy year for this stock was: ' + mostRecentBuyYear;
-    //     indexMostRecentBuy = findEntry(Number(mostRecentBuyYear), 1, 1, globalStockRes);
-    //     mostRecentBuyAdjClose = updatedStockInfo[Object.keys(updatedStockInfo)[indexMostRecentBuy]]['5. adjusted close'];
-    //     let marketPriceStock = updatedStockInfo[Object.keys(updatedStockInfo)[0]]['5. adjusted close'];
-    //     let calculatedValue = (1000 / mostRecentBuyAdjClose) * marketPriceStock;
-    //     just_money.textContent = 'If you would have put $1,000 into this stock on Jan 1st of the above year, your investment would now be worth: $' + Number(calculatedValue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    //   }
-    // } else if (recentOut >= 3) {
-    //   final_decision.textContent = 'Should you buy this stock in the year 2024: Yes'
-    //   justification.textContent = 'This stock has beat the market significantly in recent years';
-    //   if (Number(mostRecentBuyYear) > 0) {
-    //     just_year.textContent = 'The most recent buy year for this stock was: ' + mostRecentBuyYear;
-    //     indexMostRecentBuy = findEntry(Number(mostRecentBuyYear), 1, 1, globalStockRes);
-    //     mostRecentBuyAdjClose = updatedStockInfo[Object.keys(updatedStockInfo)[indexMostRecentBuy]]['5. adjusted close'];
-    //     let marketPriceStock = updatedStockInfo[Object.keys(updatedStockInfo)[0]]['5. adjusted close'];
-    //     let calculatedValue = (1000 / mostRecentBuyAdjClose) * marketPriceStock;
-    //     just_money.textContent = 'If you would have put $1,000 into this stock on Jan 1st of the above year, your investment would now be worth: $' + Number(calculatedValue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    //   }
-    // } else {
-    //   final_decision.textContent = 'Should you buy this stock in the year 2024: No';
-    //   justification.textContent = 'This stock did not consistently gain or beat the market during the last few years';
-    // }
 
     let final_decision_greeting = document.createElement('h2');
     final_decision_greeting.textContent = 'Overall Decision for Stock:';
-    // overall_rating.appendChild(final_decision_greeting);
-    // overall_rating.appendChild(final_decision);
-    // overall_rating.appendChild(justification);
-    // overall_rating.appendChild(just_year);
-    // overall_rating.appendChild(just_money);
-    // overall_rating.appendChild(hotFreshStock);
     moonConfirmed = false;
     if (currCount % 20 == 0) {
       console.log("current count")
@@ -785,35 +535,6 @@
       console.log(superGainerCandidates)
     }
     currCount++;
-
-    // let reset_greeting = document.createElement('h2');
-    // reset_greeting.textContent = 'Ready to do more Research?';
-    // let reset_button = document.createElement('button');
-    // reset_button.addEventListener('click', function() {
-    //   console.log("hey, you clicked reset button!")
-    //   document.getElementById('graph').innerHTML = '';
-    //   document.getElementById('momentum_slider').innerHTML = '';
-    //   document.getElementById('momentum').innerHTML = '';
-    //   document.getElementById('summary').innerHTML = '';
-    //   document.getElementById('overall_rating').innerHTML = '';
-    //   console.log('what exactly is going on with mr research_stock_ticker')
-    //   console.log(document.getElementById('research_stock_ticker'))
-    //   console.log(document.getElementById('research_stock_ticker').value)
-    //   document.getElementById('research_stock_ticker').value = '';
-    //   console.log(document.getElementById('research_stock_ticker'))
-    //   console.log(document.getElementById('research_stock_ticker').value)
-    //   console.log("before buy decisions")
-    //   let buyDecisions = document.querySelectorAll('.buy_decisions')
-    //   console.log(buyDecisions)
-    //   for (let buyD = 0; buyD < buyDecisions.length; buyD++) {
-    //     console.log(buyDecisions[buyD])
-    //     buyDecisions[buyD].innerHTML = '';
-    //   }
-      
-    // });
-    // reset_button.textContent = 'Reset';
-    // overall_rating.appendChild(reset_greeting);
-    // overall_rating.appendChild(reset_button);
   }
 
   // Finds the closest entry in the API week list based upon 
